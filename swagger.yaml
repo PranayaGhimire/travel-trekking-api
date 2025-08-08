@@ -1,0 +1,31 @@
+openapi: 3.0.0
+info:
+  title: Travel Trekking API
+  version: 1.0.0
+  description: API documentation
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /api/auth/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: User registered
+        '500':
+          description: Internal Server Error
