@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 
-
 const bookingSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
@@ -20,10 +19,12 @@ const bookingSchema = new mongoose.Schema({
         type:Date,
         default:Date.now
     },
+    amount:Number,
     paymentStatus: {
         type:String,
         default:'unpaid'
-    }
+    },
+    khaltiIdx: String
 },{timestamps:true})
 
 export default mongoose.model('Booking',bookingSchema);

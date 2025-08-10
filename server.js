@@ -6,10 +6,10 @@ import authRoutes from "./routes/authRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
 import destinationRoutes from "./routes/destinationRoutes.js";
 import packageRoutes from "./routes/packageRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
 import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
-import { adminOnly, protect } from "./middlewares/authMiddleware.js";
 
 const swaggerDoc = YAML.load('./swagger.yaml');
 const app = express();
@@ -25,6 +25,7 @@ app.use("/api/auth",authRoutes);
 app.use("/api/bookings",bookingRoutes);
 app.use("/api/destinations",destinationRoutes);
 app.use("/api/packages",packageRoutes);
+app.use('/api/payment',paymentRoutes)
 
 app.use('/api/docs',swaggerUi.serve,swaggerUi.setup(swaggerDoc));
 

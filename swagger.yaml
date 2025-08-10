@@ -29,3 +29,4 @@ paths:
           description: User registered
         '500':
           description: Internal Server Error
+  /api/auth/login:
