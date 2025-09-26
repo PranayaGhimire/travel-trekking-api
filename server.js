@@ -21,6 +21,18 @@ app.use(express.json());
 app.use(express.urlencoded());
 app.use(cookieParser());
 
+app.get("/", (req,res) => res.send(`
+    <h2>API Working Fine</h2>
+    <h3>API Endpoints</h3>
+    <h4>/api/auth/register</h4>
+    <h4>/api/auth/login</h4>
+    <h4>/api/auth/refresh</h4>
+    <h4>/api/bookings</h4>
+    <h4>/api/destinations</h4>
+    <h4>/api/packages</h4>
+    <h4>/api/payment</h4>
+    `))
+
 app.use("/api/auth",authRoutes);
 app.use("/api/bookings",bookingRoutes);
 app.use("/api/destinations",destinationRoutes);
