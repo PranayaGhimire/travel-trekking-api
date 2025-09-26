@@ -3,14 +3,14 @@ import User from "../models/User.js";
 import { generateAcessToken, generateRefreshToken } from "../middlewares/authMiddleware.js";
 
 export const register = async (req,res) => {
-    const {name,email,password,role} = req.body;
+    const {username,email,password,role} = req.body;
 
     try {
         const exists = await User.findOne({email});
         if(exists) return res.status(400).json({message:'Email already in use'});
 
         const hashed = await bcrypt.hash(password,10);
-        const user = await User.create({name,email,password:hashed,role});
+        const user = await User.create({username,email,password:hashed,role});
 
         const accessToken = generateAcessToken(user._id);
         const refreshToken = generateRefreshToken(user._id);
