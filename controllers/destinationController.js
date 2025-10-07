@@ -5,18 +5,18 @@ export const createDestination = async (req,res) => {
     try {
         const {name,location,description,bestSeason} = req.body;
 
-        if (!req.file){
-            return res.status(400).json({
-                success:false,
-                message:"Image is required"
-            });
-        }
+        // if (!req.file){
+        //     return res.status(400).json({
+        //         success:false,
+        //         message:"Image is required"
+        //     });
+        // }
         const destination = await Destination.create({
             name,
             location,
             description,
             bestSeason,
-            imageUrl:req.file.path
+            imageUrl:req.file?.path
         });
         res.status(201).json({
             success:true,
