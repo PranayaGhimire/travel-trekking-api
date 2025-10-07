@@ -3,7 +3,21 @@ import Destination from "../models/Destination.js"
 // Create a new destination
 export const createDestination = async (req,res) => {
     try {
-        const destination = await Destination.create(req.body);
+        const {name,location,description,bestSeason} = req.body;
+
+        if (!req.file){
+            return res.status(400).json({
+                success:false,
+                message:"Image is required"
+            });
+        }
+        const destination = await Destination.create({
+            name,
+            location,
+            description,
+            bestSeason,
+            imageUrl:req.file.path
+        });
         res.status(201).json({
             success:true,
             message:'New destination created successfully',
