@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
+import jwt from "jsonwebtoken";
 import { generateAcessToken, generateRefreshToken } from "../middlewares/authMiddleware.js";
 
 export const register = async (req,res) => {
@@ -42,10 +43,10 @@ export const login = async (req,res) => {
     try {
         const user = await User.findOne({email}).select('+password');
         if(!user) 
-            res.status(400).json({ message:'Invalid credentials' });
+            return res.status(400).json({ message:'Invalid credentials' });
 
-        const isMatch = bcrypt.compare(password,user.password);
-        if(!isMatch) res.status(400).json({ message:'Invalid credentials' });
+        const isMatch = await bcrypt.compare(password,user.password);
+        if(!isMatch) return res.status(400).json({ message:'Invalid credentials' });
 
         const accessToken = generateAcessToken(user._id);
         const refreshToken = generateRefreshToken(user._id);
