@@ -4,7 +4,6 @@ import Destination from "../models/Destination.js"
 export const createDestination = async (req,res) => {
     try {
         const {name,location,description,bestSeason} = req.body;
-
         // if (!req.file){
         //     return res.status(400).json({
         //         success:false,

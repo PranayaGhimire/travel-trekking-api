@@ -1,6 +1,8 @@
 import {v2 as cloudinary} from "cloudinary";
 import multer from "multer";
+import dotenv from "dotenv"
 import { CloudinaryStorage } from "multer-storage-cloudinary";
+dotenv.config();
 
 cloudinary.config({
     cloud_name:process.env.CLOUDINARY_CLOUD_NAME,
@@ -12,7 +14,7 @@ const storage = new CloudinaryStorage({
     cloudinary,
     params:{
         folder:'travel-trekking',
-        allowed_formats:['jpg','png','jpeg'],
+        allowed_formats:['jpg','png','jpeg','webp'],
     },
 });
 
