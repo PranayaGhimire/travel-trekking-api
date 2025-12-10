@@ -5,14 +5,13 @@ import { sendEmail } from "../utils/emailSender.js";
 // 1️⃣ INITIATE PAYMENT
 export const initiateKhaltiPayment = async (req, res) => {
   try {
-    const { amount, packageId, packageName } = req.body;
+    const { amount, bookingId } = req.body;
 
     const payload = {
       return_url: "http://localhost:3000/payment/verify",
       website_url: "http://localhost:3000",
       amount: amount * 100,                 // Khalti works in paisa
-      purchase_order_id: packageId,
-      purchase_order_name: packageName,
+      purchase_order_id: bookingId,
     };
 
     const response = await axios.post(
