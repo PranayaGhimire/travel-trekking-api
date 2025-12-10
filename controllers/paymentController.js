@@ -2,54 +2,96 @@ import axios from "axios";
 import Booking from "../models/Booking.js"
 import { generateInvoice } from "../utils/invoiceGenerator.js";
 import { sendEmail } from "../utils/emailSender.js";
-export const verifyKhaltiPayment = async (req,res) => {
-    try {
-        const {token,amount,bookingId} = req.body;
+// 1️⃣ INITIATE PAYMENT
+export const initiateKhaltiPayment = async (req, res) => {
+  try {
+    const { amount, packageId, packageName } = req.body;
 
-        // Verify payment with khalti API
-        const response = await axios.post(process.env.KHALTI_VERIFY_URL,{
-            token,amount
-        },{
-            headers:{
-                Authorization:`Key ${process.env.KHALTI_SECRET_KEY}`,
-                'Content-Type':'application/json'
-            }
-        });
+    const payload = {
+      return_url: "http://localhost:3000/payment/verify",
+      website_url: "http://localhost:3000",
+      amount: amount * 100,                 // Khalti works in paisa
+      purchase_order_id: packageId,
+      purchase_order_name: packageName,
+    };
 
-        if(response.data.state.name === 'Completed') {
-            // Update booking status
-            const booking=await Booking.findByIdAndUpdate(bookingId,{
-                paymentStatus: 'Paid',
-                khaltiIdx: response.data.idx
-            },{new:true}).populate('user').populate('package');
+    const response = await axios.post(
+      "https://a.khalti.com/api/v2/epayment/initiate/",
+      payload,
+      {
+        headers: {
+          Authorization: `Key ${process.env.KHALTI_SECRET_KEY}`,
+        },
+      }
+    );
 
-            // Generate PDF invoice
-            const invoicePath = await generateInvoice(booking,booking.user,booking.package);
+    res.json({
+      success: true,
+      payment_url: response.data.payment_url,
+      pidx: response.data.pidx,
+    });
 
-            // Send email with invoice
-            await sendEmail(
-                booking.user.email,
-                'Your Travel & Trekking Booking Invoice',
-                `Hello ${booking.user.name},\n\nThank you for booking with us! Your payment has been successfully received.\nPlease find your invoice attached.\n\nSafe travels`,
-                invoicePath
-            );
+  } catch (err) {
+    res.status(500).json({ error: err.response?.data || err.message });
+  }
+};
 
-            res.status(201).json({
-                success:true,
-                message:'Payment verified, invoice generated, and email sent.',
-                transactionId: response.data.idx
-            });
-        } else {
-            res.status(400).json({
-                success:false,
-                message:'Payment not completed'
-            });
-        }
+export const verifyKhaltiPayment = async (req, res) => {
+  try {
+    const { pidx, bookingId } = req.body;
 
-    } catch (error) {
-        res.status(500).json({
-            success:false,
-            message:error.response?.data || error.message
-        });       
+    const response = await axios.post(
+      "https://a.khalti.com/api/v2/epayment/lookup/",
+      { pidx },
+      {
+        headers: {
+          Authorization: `Key ${process.env.KHALTI_SECRET_KEY}`,
+        },
+      }
+    );
+
+    if (response.data.status === "Completed") {
+      const booking = await Booking.findByIdAndUpdate(
+        bookingId,
+        {
+          paymentStatus: "Paid",
+          khaltiIdx: pidx,
+        },
+        { new: true }
+      )
+        .populate("user")
+        .populate("package");
+
+      // Generate invoice PDF
+      const invoicePath = await generateInvoice(
+        booking,
+        booking.user,
+        booking.package
+      );
+
+      // Send email with invoice
+      await sendEmail(
+        booking.user.email,
+        "Your Booking Invoice",
+        `Hello ${booking.user.name}, your payment has been received. Please find your invoice attached.`,
+        invoicePath
+      );
+
+      return res.json({
+        success: true,
+        message: "Payment verified successfully.",
+        transactionId: pidx,
+      });
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: "Payment not completed.",
+      });
     }
-}
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.response?.data || error.message,
+    });
+  }
+};
