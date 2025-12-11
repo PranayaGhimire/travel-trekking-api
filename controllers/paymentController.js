@@ -24,7 +24,6 @@ export const initiateKhaltiPayment = async (req, res) => {
         },
       }
     );
-
     res.json({
       success: true,
       payment_url: response.data.payment_url,
@@ -49,12 +48,12 @@ export const verifyKhaltiPayment = async (req, res) => {
         },
       }
     );
-
     if (response.data.status === "Completed") {
       const booking = await Booking.findByIdAndUpdate(
         bookingId,
         {
           paymentStatus: "Paid",
+          status:"completed",
           khaltiIdx: pidx,
         },
         { new: true }

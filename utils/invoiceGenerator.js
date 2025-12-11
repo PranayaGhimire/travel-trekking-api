@@ -1,43 +1,58 @@
 import PDFDocument from "pdfkit";
-import fs from 'fs';
+import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 
-export const generateInvoice = async (booking,user,packageData) => {
-    return new Promise((resolve,reject) => {
-        try {
-            const invoicePath = path.join(__dirname,`../invoices/invoice_${booking._id}.pdf`);
-            const doc = new PDFDocument({margin:50});
+// ES MODULE FIX
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-            const writeStream = fs.createWriteStream(invoicePath);
-            doc.pipe(writeStream);
+export const generateInvoice = async (booking, user, packageData) => {
+  return new Promise((resolve, reject) => {
+    try {
+      // Ensure invoices folder exists
+      const invoiceDir = path.join(__dirname, "../invoices");
+      if (!fs.existsSync(invoiceDir)) {
+        fs.mkdirSync(invoiceDir);
+      }
 
-            // Header
-            doc.fontSize(20).text('Travel & Trekking Invoice',{align:'center'});
-            doc.moveDown();
+      const invoicePath = path.join(
+        invoiceDir,
+        `invoice_${booking._id}.pdf`
+      );
 
-            // Booking Details
-            doc.fontSize(14).text(`Invoice ID: ${booking._id}`);
-            doc.text(`Date: ${new Date().toLocaleDateString()}`);
-            doc.moveDown();
+      const doc = new PDFDocument({ margin: 50 });
+      const writeStream = fs.createWriteStream(invoicePath);
+      doc.pipe(writeStream);
 
-            // User Info
-            doc.text(`Customer: ${user.name}`);
-            doc.text(`Email: ${user.email}`);
-            doc.moveDown();
+      // Header
+      doc.fontSize(20).text("Travel & Trekking Invoice", { align: "center" });
+      doc.moveDown();
 
-            // Package Info
-            doc.text(`Package: ${packageData.name}`);
-            doc.text(`Amount Paid: Rs ${booking.amount}`);
-            doc.moveDown();
+      // Booking Details
+      doc.fontSize(14).text(`Invoice ID: ${booking._id}`);
+      doc.text(`Date: ${new Date().toLocaleDateString()}`);
+      doc.moveDown();
 
-            // Footer
-            doc.text('Thank you for booking with us!',{align:'center'});
-            
-            doc.end();
+      // User Info
+      doc.text(`Customer: ${user.name}`);
+      doc.text(`Email: ${user.email}`);
+      doc.moveDown();
 
-            writeStream.on('finish',() => resolve(invoicePath));
-        } catch (error) {
-            reject(error);
-        }
-    })
-}
+      // Package Info
+      doc.text(`Package: ${packageData.title || packageData.name}`);
+      doc.text(`Amount Paid: Rs ${booking.amount}`);
+      doc.moveDown();
+
+      // Footer
+      doc.text("Thank you for booking with us!", { align: "center" });
+
+      doc.end();
+
+      writeStream.on("finish", () => resolve(invoicePath));
+      writeStream.on("error", reject);
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
