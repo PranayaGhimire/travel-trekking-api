@@ -2,21 +2,22 @@ import axios from "axios";
 import Booking from "../models/Booking.js"
 import { generateInvoice } from "../utils/invoiceGenerator.js";
 import { sendEmail } from "../utils/emailSender.js";
+const KHALTI_URL=process.env.KHALTI_URL
 // 1️⃣ INITIATE PAYMENT
 export const initiateKhaltiPayment = async (req, res) => {
   try {
     const { amount, bookingId,packageName } = req.body;
 
     const payload = {
-      return_url: "http://localhost:3000/payment",
-      website_url: "http://localhost:3000",
+      return_url: process.env.RETURN_URL,
+      website_url: process.env.WEBSITE_URL,
       amount: amount * 100,                 // Khalti works in paisa
       purchase_order_id: bookingId,
       purchase_order_name:packageName
     };
 
     const response = await axios.post(
-      "https://a.khalti.com/api/v2/epayment/initiate/",
+      `${KHALTI_URL}/initiate/`,
       payload,
       {
         headers: {
@@ -40,7 +41,7 @@ export const verifyKhaltiPayment = async (req, res) => {
     const { pidx, bookingId } = req.body;
 
     const response = await axios.post(
-      "https://a.khalti.com/api/v2/epayment/lookup/",
+      `${KHALTI_URL}/lookup/`,
       { pidx },
       {
         headers: {
