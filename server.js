@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import path from "path";
 import { connectDB } from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
@@ -12,7 +13,7 @@ import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
 
-const swaggerDoc = YAML.load(path.join(process.cwd(), './swagger.yaml'));
+const swaggerDoc = YAML.load(path.join(process.cwd(), 'swagger.yaml'));
 const app = express();
 dotenv.config();
 connectDB();
