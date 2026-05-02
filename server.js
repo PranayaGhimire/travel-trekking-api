@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import { connectDB } from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
 import destinationRoutes from "./routes/destinationRoutes.js";
 import packageRoutes from "./routes/packageRoutes.js";
@@ -11,7 +12,7 @@ import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
 
-const swaggerDoc = YAML.load('./swagger.yaml');
+const swaggerDoc = YAML.load(path.join(process.cwd(), './swagger.yaml'));
 const app = express();
 dotenv.config();
 connectDB();
@@ -34,6 +35,7 @@ app.get("/", (req,res) => res.send(`
     `))
 
 app.use("/api/auth",authRoutes);
+app.use("/api/users",userRoutes);
 app.use("/api/bookings",bookingRoutes);
 app.use("/api/destinations",destinationRoutes);
 app.use("/api/packages",packageRoutes);
