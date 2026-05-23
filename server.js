@@ -20,9 +20,13 @@ connectDB();
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://tts-api.pranayaghimire.com.np"],
+    origin: ["http://localhost:3000", "https://tts.pranayaghimire.com.np"],
+    credentials: true,
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
   }),
 );
+app.options("*", cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
