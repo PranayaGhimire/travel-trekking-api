@@ -20,7 +20,7 @@ connectDB();
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://tts.pranayaghimire.com.np"],
+    origin: ["http://localhost:3000", "https://tts-api.pranayaghimire.com.np"],
   }),
 );
 app.use(express.json());
